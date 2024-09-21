@@ -1,7 +1,8 @@
 from django.db import models
 
 # Create your models here.
-class Company(models.Model):
+class company(models.Model):
+    logo = models.ImageField(upload_to='company/images/', default='company/images/default.jpg')
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=300)
     email = models.EmailField()

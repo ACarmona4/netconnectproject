@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio - NetConnect{% endblock %}
+
+{% block content %}
+
+<div class="hero-section" style="position: relative; height: 80vh; background-image: url('{% static 'images/fondo.jpg' %}'); background-size: cover; background-position: center; width: 100%;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.65);"></div>
+    <div class="hero-content" style="position: absolute; top: 50%; left: 5%; transform: translateY(-50%); color: white; z-index: 1;">
+        <h3 class="display-4" style="font-weight: bold;">Somos</h3>
+        <h1 class="display-1" style="font-weight: bold;">NetConnect</h1>
+        <h4 class="lead" style="font-weight: bold;">CREA CONEXIONES VALIOSAS</h4>
+    </div>
+</div>
+
+
+<div class="container text-center mt-5">
+    <p>Descubre eventos, crea conexiones valiosas y lleva tu carrera profesional al siguiente nivel con NetConnect. Aquí podrás informarte con eventos que ocurren en Colombia y poder acceder a toda la información necesaria desde la comodidad de tu hogar. ¡Nunca más vuelvas a perder una oportunidad laboral!</p>
+</div>
+
+<div class="container text-center mt-5">
+    <h2>Tenemos presencia en las principales ciudades de Colombia</h2>
+</div>
+
+<!-- Imagenes de las ciudades -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/bogota.jpg' %}" alt="Bogotá" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Bogotá</h6>
+        </div>
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/medellin.jpg' %}" alt="Medellín" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Medellín</h6>
+        </div>
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/cali.jpg' %}" alt="Cali" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Cali</h6>
+        </div>
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/barranquilla.jpg' %}" alt="Barranquilla" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Barranquilla</h6>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/cartagena.jpg' %}" alt="Cartagena" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Cartagena</h6>
+        </div>
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/bucaramanga.jpg' %}" alt="Bucaramanga" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Bucaramanga</h6>
+        </div>
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/pereira.jpg' %}" alt="Pereira" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Pereira</h6>
+        </div>
+        <div class="col-md-3 text-center">
+            <img src="{% static 'images/santamarta.jpg' %}" alt="Santa Marta" class="img-fluid rounded" style="height: 200px; width: 100%;">
+            <h6>Santa Marta</h6>
+        </div>
+    </div>
+</div>
+{% endblock %}
