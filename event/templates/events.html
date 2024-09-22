@@ -16,22 +16,22 @@
     <div id="carouselExampleCaptions" class="carousel slide mt-5" data-bs-ride="carousel" data-bs-interval="10000" style="background-color: #f5f5f5;">
         
         <div class="carousel-indicators" style="bottom: 20px;"> 
-            {% for event in events %}
+            {% for event in carousel_events %}
             <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{ forloop.counter }}" style="width: 30px; height: 5px; background-color: {% if forloop.first %}#000{% else %}#4c4c4c{% endif %}; border: none; margin: 0 5px;"></button>
             {% endfor %}
         </div>
 
         <div class="carousel-inner">
-            {% for event in events %}
+            {% for event in carousel_events %}
             <div class="carousel-item {% if forloop.first %}active{% endif %}">
                 <div class="row align-items-center justify-content-center" style="padding-left: 40px; padding-right: 40px;">
 
                     <div class="col-md-5 text-start" style="z-index: 1; padding: 40px;"> 
                         <h3><strong><span style="color: #001f3f;">{{ event.name }}</span></strong></h3>
                         <p>{{ event.description }}</p>
-                        <p><strong>Fecha:</strong> {{ event.date }}</p>
-                        <p><strong>Hora:</strong> {{ event.time }}</p>
-                        <p><strong>Ubicación:</strong> {{ event.location }}</p>
+                        <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
+                        <p><img src="{% static 'images/hora.png' %}" alt="Hora" style="width: 20px; margin-right: 10px;"> {{ event.time }}</p>
+                        <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
                         <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
                     </div>
 
@@ -49,6 +49,35 @@
         <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next" style="z-index: 2; position: absolute; right: -50px; top: 50%; transform: translateY(-50%); background: none; border: none;">
             <img src="{% static 'images/derecha.png' %}" alt="Siguiente" style="width: 50px; height: auto;">
         </button>
+    </div>
+
+    <h3 class="mt-5">Descubre todos los eventos que te esperan</h3>
+    <p class='text_muted'>¿Buscas un evento en específico? Encuéntralo aquí:</p>
+
+    <form method="GET" action="#search-results" class="d-flex justify-content-center mt-4 mb-5">
+        <input class="form-control me-2" type="search" placeholder="Filtra por nombre, ubicación u organizador" aria-label="Buscar" name="Encuentra un evento" value="{{ searchTerm | default_if_none:""}}">
+        <button class="btn" style="background-color: #001f3f; color: white; border-color: #001f3f;" type="submit">Buscar</button>
+    </form>
+
+    <div id="search-results" class="row">
+        {% for event in events %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ event.picture.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.name }}</h5>
+                    <p class="card-text">{{ event.description }}</p>
+                    <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
+                    <p><img src="{% static 'images/hora.png' %}" alt="Hora" style="width: 20px; margin-right: 10px;"> {{ event.time }}</p>
+                    <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
+                    <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
+                </div>
+                <div class="card-footer text-center">
+                    <button class="btn" style="background-color: #bdecb6; color: white; border: none;">Inscríbete</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

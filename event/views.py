@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Event
 from django.utils import timezone
+from django.db.models import Q
 
 # Create your views here.
 def home(request):
@@ -9,6 +10,20 @@ def home(request):
 
 def displayEvents(request):
     current_time = timezone.now()
-    events = Event.objects.filter(date__gte=current_time).order_by('date')[:4]
-    
-    return render(request, 'events.html', {'events': events})
+
+    carousel_events = Event.objects.filter(date__gte=current_time).order_by('date')[:4]
+    events = Event.objects.filter(date__gte=current_time).order_by('date')
+
+    searchTerm = request.GET.get('Encuentra un evento')
+    if searchTerm:
+        events = events.filter(
+            Q(name__icontains=searchTerm) | 
+            Q(location__icontains=searchTerm) | 
+            Q(organizer__icontains=searchTerm)
+        )
+
+    return render(request, 'events.html', {
+        'searchTerm': searchTerm,
+        'carousel_events': carousel_events,  
+        'events': events 
+    })
