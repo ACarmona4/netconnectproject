@@ -5,24 +5,23 @@
 
 {% block content %}
 
-<div class="hero-section" style="position: relative; height: 80vh; background-image: url('{% static 'images/fondo.jpg' %}'); background-size: cover; background-position: center; width: 100%;">
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.65);"></div>
-    <div class="hero-content" style="position: absolute; top: 50%; left: 5%; transform: translateY(-50%); color: white; z-index: 1;">
-        <h3 class="display-4" style="font-weight: bold;">Somos</h3>
-        <h1 class="display-1" style="font-weight: bold;">NetConnect</h1>
-        <h4 class="lead" style="font-weight: bold;">CREA CONEXIONES VALIOSAS</h4>
+<div class="hero-section position-relative" style="height: 80vh; background-image: url('{% static 'images/fondo.jpg' %}'); background-size: cover; background-position: center; width: 100%;">
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-75"></div>
+    <div class="hero-content position-absolute top-50 translate-middle-y text-white" style="z-index: 1; font-family: 'Poppins', sans-serif; padding-left: 100px;">
+        <h3 class="display-4 fw-bold">Somos</h3>
+        <h1 class="display-1 fw-bold">NetConnect</h1>
+        <h4 class="lead fw-bold"><span style="color: #00b359;">CREA CONEXIONES VALIOSAS</span></h4>
     </div>
 </div>
 
 <div class="container text-center mt-5">
-    <p> <Strong>Crea conexiones valiosas y lleva tu carrera profesional al siguiente nivel</Strong> con NetConnect. Aquí podrás informarte con eventos que ocurren en Colombia y poder acceder a toda la información necesaria desde la comodidad de tu hogar. ¡Nunca más vuelvas a perder una oportunidad laboral!</p>
+    <p><strong>Crea conexiones valiosas y lleva tu carrera profesional al siguiente nivel</strong> con NetConnect. Aquí podrás informarte sobre eventos que ocurren en Colombia y acceder a toda la información necesaria desde la comodidad de tu hogar. ¡Nunca más vuelvas a perder una oportunidad laboral!</p>
 </div>
 
 <div class="container text-center mt-5">
-    <h2>Tenemos presencia en <Strong>las principales ciudades de Colombia</Strong></h2>
+    <h2>Tenemos presencia en <strong>las principales ciudades de Colombia</strong></h2>
 </div>
 
-<!-- Imagenes de las ciudades -->
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-3 text-center">
@@ -62,9 +61,8 @@
     </div>
 </div>
 
-
 <div class="container text-center mt-5">
-    <a href="#" class="btn btn-primary btn-lg" style="width: 100%; background-color: #00008b; border-color: #00008b;">Descubre los eventos que tenemos para ti</a>
+    <a href="{% url 'events' %}" class="btn btn-primary btn-lg w-100" style="background-color: #00008b; border-color: #00008b;">Descubre los eventos que tenemos para ti</a>
 </div>
 
 {% endblock %}
