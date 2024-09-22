@@ -1,4 +1,5 @@
 from django.db import models
+from company.models import Company
 
 # Create your models here.
 class Event(models.Model):
@@ -10,6 +11,7 @@ class Event(models.Model):
     time = models.TimeField()
     location = models.CharField(max_length=100)
     organizer = models.CharField(max_length=100)
+    participants = models.ManyToManyField(Company, blank=True)
     
     def __str__(self):
         return (f'{self.name} - {self.date}')
