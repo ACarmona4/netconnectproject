@@ -1,22 +1,30 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 
-#Register your models here.
 class CustomUserAdmin(UserAdmin):
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    model = User
+    list_display = ['email', 'name', 'last_name', 'is_company']
+    list_filter = ['is_company', 'is_staff', 'is_superuser']
+
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('name', 'last_name', 'phone', 'is_company', 'logo')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        ('Información Personal', {'fields': ('name', 'last_name', 'phone')}),
+        ('Permisos', {'fields': ('is_staff', 'is_superuser', 'is_active')}),
+        ('Company', {'fields': ('is_company', 'logo')}),
     )
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'is_company', 'is_active', 'is_staff', 'is_superuser'),
+            'fields': ('email', 'name', 'last_name', 'phone', 'password1', 'password2', 'is_company', 'logo', 'is_staff', 'is_superuser'),
         }),
     )
-    list_display = ('email', 'name', 'last_name', 'is_company', 'is_staff')
-    search_fields = ('email', 'name', 'last_name')
+
+    search_fields = ('email',)
     ordering = ('email',)
 
 admin.site.register(User, CustomUserAdmin)
