@@ -22,7 +22,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <span style="color: #00b359; font-family: 'Poppins', sans-serif; font-weight: 600;">Net</span><span style="color: #001f3f; font-family: 'Poppins', sans-serif; font-weight: 600;">Connect</span> 
+                <span style="color: #00b359; font-family: 'Poppins', sans-serif; font-weight: 600;">Net</span><span style="color: #001f3f; font-family: 'Poppins', sans-serif; font-weight: 600;">Connect</span>
                 <span style="color: #999; font-size: 0.8em;">by magneto</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,30 @@
                         <a class="nav-link" href="#">Contacto</a>
                     </li>
                 </ul>
+
+                <!-- Mostrar solo si el usuario no está autenticado -->
+                {% if not user.is_authenticated %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-2">
+                        <a class="btn d-flex align-items-center" href="{% url 'login' %}" style="background-color: #e0e0e0; border: none; padding: 10px 20px; border-radius: 25px;">
+                            <img src="{% static 'images/login.png' %}" alt="Iniciar sesión" style="width: 20px; height: 20px; margin-right: 10px;">
+                            <span style="color: #000;">Iniciar sesión</span>
+                        </a>
+                    </li>
+                </ul>
+                {% else %}
+                <!-- Mostrar si el usuario está autenticado -->
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3">
+                        <span class="navbar-text">Hola, {{ user.name }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn" href="{% url 'logout' %}" style="background-color: transparent; border: none;">
+                            <img src="{% static 'images/logout.png' %}" alt="Cerrar sesión" style="width: 25px; height: 25px;">
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>
