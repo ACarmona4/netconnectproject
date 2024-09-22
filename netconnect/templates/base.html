@@ -58,7 +58,11 @@
                 <!-- Mostrar si el usuario está autenticado -->
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item me-3">
+                        {% if user.is_company %}
+                        <span class="navbar-text">Hola, {{ user.company.personInCharge }} ({{ user.company.name }})</span>
+                        {% else %}
                         <span class="navbar-text">Hola, {{ user.name }}</span>
+                        {% endif %}
                     </li>
                     <li class="nav-item">
                         <a class="btn" href="{% url 'logout' %}" style="background-color: transparent; border: none;">

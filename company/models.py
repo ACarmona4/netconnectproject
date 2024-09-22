@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import User
 
 # Create your models here.
 class Company(models.Model):
@@ -8,6 +9,7 @@ class Company(models.Model):
     description = models.TextField(max_length=300)
     email = models.EmailField()
     personInCharge = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=None, related_name='company')
     
     def __str__(self):
         return self.name
