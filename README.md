@@ -5,9 +5,9 @@
 * David Restrepo Aristizabal
 
 ## Entorno de desarrollo
-Operating System: OS Windows 11 - MacOS Sonoma 14.6.1
-Python Version: Python 3.12.4.
-IDE/Compiler:  Visual Studio Code 1.93.0 (Universal)
+Sistema operativo: OS Windows 11 - MacOS Sonoma 14.6.1
+Versión de Python: Python 3.12.4.
+IDE:  Visual Studio Code 1.93.0 (Universal)
 
 ## Información del proyecto
 NetConnect es una plataforma de networking diseñada para facilitar la creación de conexiones valiosas entre profesionales y empresas. A través de la plataforma, los usuarios pueden inscribirse a eventos de networking en diferentes ciudades, descubrir oportunidades para ampliar su red de contactos y establecer relaciones con empresas de interés. NetConnect permite a los participantes acceder fácilmente a información sobre los eventos disponibles y contactar directamente con las empresas organizadoras. Ya sea para asistir a eventos, establecer contactos profesionales o explorar oportunidades de negocio, NetConnect ofrece una solución integral para impulsar el crecimiento y las conexiones en la comunidad empresarial.
