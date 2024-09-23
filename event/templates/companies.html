@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel de Empresa - NetConnect{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4"><span style="color: #001f3f; font-family: 'Poppins', sans-serif; font-weight: 600;">Bienvenido al panel de empresas</span></h1>
+    <hr style="border: 1px solid #001f3f;">
+    <p>Desde aquí podrás gestionar tus eventos y ver información relevante sobre los eventos que has creado. Gestiona toda la logística del evento y los asistentes desde un solo lugar.</p>
+
+    {% if messages %}
+        <div class="alert alert-success" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if user.is_company %}
+    <div class="row align-items-center mt-2 mb-3">
+        <div class="col-md-6 text-start">
+            <h2>{{ user.company.name }}</h2> 
+        </div>
+        <div class="col-md-6 text-end">
+            <img src="{{ user.company.logo.url }}" alt="Logo de {{ user.company.name }}" class="img-fluid" style="width: 120px; height: 120px; object-fit: contain; border-radius: 10px; margin-bottom: 10px;">
+        </div>
+    </div>
+    {% endif %}
+
+    <h2 class="mb-4 mt-5">Organizar un nuevo evento</h2>
+    <p>¿Listo para organizar un nuevo evento? Completa el formulario a continuación y nosotros nos encargamos del resto.</p>
+
+
+    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#eventForm" aria-expanded="false" aria-controls="eventForm" style="background-color: #001f3f; border-color: #00008b;">
+        Crear un evento
+    </button>
+
+    <div class="collapse" id="eventForm">
+        <div class="card card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                
+                <button type="submit" class="btn btn-primary" style="background-color: #001f3f; border-color: #00008b;">Crear evento</button>
+            </form>
+        </div>
+    </div>
+
+    <h2 class="mt-5">Datos de asistentes</h2>
+    <p>Aquí podrás ver datos relacionados con los asistentes a tus eventos.</p>
+</div>
+{% endblock %}

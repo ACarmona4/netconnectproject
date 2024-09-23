@@ -36,15 +36,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'events' %}">Eventos</a>
                     </li>
+                    {% if user.is_authenticated and user.is_company %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Empresas</a>
+                        <a class="nav-link" href="{% url 'companies' %}">Portal empresas</a>
                     </li>
+                {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="#">Contacto</a>
                     </li>
                 </ul>
 
-                <!-- Mostrar solo si el usuario no está autenticado -->
                 {% if not user.is_authenticated %}
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item me-2">
@@ -55,7 +56,6 @@
                     </li>
                 </ul>
                 {% else %}
-                <!-- Mostrar si el usuario está autenticado -->
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item me-3">
                         {% if user.is_company %}
@@ -75,13 +75,11 @@
         </div>
     </nav>
 
-    <!-- Contenido principal -->
     <div class="container mt-2">
         {% block content %}
         {% endblock content %}
     </div>
 
-    <!-- Footer -->
     <footer class="bg-light text-center text-lg-start mt-4">
         <div class="container p-2">
         <div class="text-center p-3">
@@ -89,7 +87,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap 5.3.3 JS, Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
