@@ -29,27 +29,3 @@ def displayEvents(request):
         'carousel_events': carousel_events,  
         'events': events 
     })
-    
-def companyDashboard(request):
-    if request.user.is_company:
-        if request.method == 'POST':
-            form = EventForm(request.POST, request.FILES)
-            if form.is_valid():
-                event = form.save(commit=False)
-                event.organizer = request.user.company
-                event.save()
-                form.save_m2m()  
-                messages.success(request, '¡Evento creado con éxito!')
-                return redirect('companies')
-        else:
-            form = EventForm()
-
-        company_events = Event.objects.filter(organizer=request.user.company)
-        return render(request, 'companies.html', {
-            'form': form,
-            'company_events': company_events,
-        })
-    
-    else:
-        messages.error(request, 'Solo las empresas pueden acceder a este panel.')
-        return redirect('events')

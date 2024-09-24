@@ -65,6 +65,14 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="card-footer text-center">
+                            <form method="POST" action="{% url 'companies' %}" style="display: inline-block;">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_event_id" value="{{ event.id }}">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este evento?')">Eliminar evento</button>
+                            </form>
+                            <button class="btn" style="background-color: #001f3f; color: white; margin-left: 10px;">Modificar evento</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -88,7 +96,7 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
-                
+                <input type="hidden" name="create_event" value="1">  
                 <button type="submit" class="btn btn-primary" style="background-color: #001f3f; border-color: #00008b;">Crear evento</button>
             </form>
         </div>
