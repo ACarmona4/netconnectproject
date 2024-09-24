@@ -5,6 +5,7 @@
 
 {% block content %}
 
+<!-- Título y foto -->
 <div class="hero-section position-relative" style="height: 80vh; background-image: url('{% static 'images/fondo.jpg' %}'); background-size: cover; background-position: center; width: 100%;">
     <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-75"></div>
     <div class="hero-content position-absolute top-50 translate-middle-y text-white" style="z-index: 1; font-family: 'Poppins', sans-serif; padding-left: 100px;">
@@ -18,6 +19,7 @@
     <p><strong>Crea conexiones valiosas y lleva tu carrera profesional al siguiente nivel</strong> con NetConnect. Aquí podrás informarte sobre eventos que ocurren en Colombia y acceder a toda la información necesaria desde la comodidad de tu hogar. ¡Nunca más vuelvas a perder una oportunidad laboral!</p>
 </div>
 
+<!-- Ciudades (fotos y texto) -->
 <div class="container text-center mt-5">
     <h2>Tenemos presencia en <strong>las principales ciudades de Colombia</strong></h2>
 </div>
@@ -61,6 +63,7 @@
     </div>
 </div>
 
+<!-- Botón para ir a la página de eventos -->
 <div class="container text-center mt-5">
     <a href="{% url 'events' %}" class="btn btn-primary btn-lg w-100" style="background-color: #001f3f; border-color: #00008b;">Descubre los eventos que tenemos para ti</a>
 </div>

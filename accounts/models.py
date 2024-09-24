@@ -41,4 +41,4 @@ class User(AbstractUser):
     
 
     def __str__(self):
-        return f"[ID {self.id} - {self.name} {self.last_name}]"
+        return self.name

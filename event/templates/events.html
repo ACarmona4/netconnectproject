@@ -5,14 +5,17 @@
 
 {% block content %}
 <div class="container mt-5 text-center">
-    <h1>Mira los eventos que tenemos <strong>para ti</strong></h1>
+
+    <!-- Título -->
+    <h1 class="mb-4"><span style="color: #001f3f; font-family: 'Poppins', sans-serif; font-weight: 600;">Mira los eventos que tenemos <Strong>para ti</Strong></span></h1>
     <p class="mt-3">
         Explora todos los eventos de networking que tenemos disponibles. 
         Descubre oportunidades únicas para conectar con profesionales y empresas en tu área. 
         ¡No te pierdas ningún evento y empieza a crear conexiones valiosas hoy mismo!
     </p>
-    <h3>Estos son nuestros eventos destacados</h3>
 
+    <!-- Slides de los eventos destacados -->
+    <h3>Estos son nuestros eventos destacados</h3>
     <div id="carouselExampleCaptions" class="carousel slide mt-5" data-bs-ride="carousel" data-bs-interval="10000" style="background-color: #f5f5f5;">
         
         <div class="carousel-indicators" style="bottom: 20px;"> 
@@ -51,6 +54,7 @@
         </button>
     </div>
 
+    <!-- Buscador de eventos y cards de los eventos -->
     <h3 class="mt-5">Descubre todos los eventos que te esperan</h3>
     <p class='text_muted'>¿Buscas un evento en específico? Encuéntralo aquí:</p>
 
@@ -62,9 +66,9 @@
     <div id="search-results" class="row">
         {% for event in events %}
         <div class="col-md-4 mb-4">
-            <div class="card h-100">
+            <div class="card h-100 d-flex flex-column">
                 <img src="{{ event.picture.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
-                <div class="card-body">
+                <div class="card-body flex-grow-1">
                     <h5 class="card-title">{{ event.name }}</h5>
                     <p class="card-text">{{ event.description }}</p>
                     <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
@@ -72,9 +76,34 @@
                     <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
                     <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
                 </div>
-                <div class="card-footer text-center">
-                    <button class="btn" style="background-color: #bdecb6; color: white; border: none;">Inscríbete</button>
+
+                <div class="accordion mt-auto" id="accordionEvent{{ forloop.counter }}">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                Ver empresas participantes
+                            </button>
+                        </h2>
+                        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionEvent{{ forloop.counter }}">
+                            <div class="accordion-body text-start"> 
+                                <ul>
+                                    {% for company in event.participants.all %}
+                                        <li>{{ company.name }}</li>
+                                    {% empty %}
+                                        <p>No hay empresas participantes para este evento.</p>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="card-footer text-center">
+                    {% if user.is_authenticated and not user.is_company %}
+                        <a href=" " class="btn" style="background-color: #bdecb6; color: white; border: none;">Inscríbete</a>
+                    {% endif %}
+                </div>
+
             </div>
         </div>
         {% endfor %}
