@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Eventos - NetConnect{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4"><span style="color: #001f3f; font-family: 'Poppins', sans-serif; font-weight: 600;">Mis Eventos</span></h1>
+    <hr style="border: 1px solid #001f3f;">
+    <style>
+       
+        .accordion-button {
+            background-color: #ffffff; 
+            font-weight: 600;
+            color: #001f3f;
+        }
+    
+        
+        .accordion-button:not(.collapsed) {
+            background-color: #f5f5f5; 
+            font-weight: 600;
+            color: #001f3f; 
+        }
+    
+        
+        .accordion-item {
+            background-color: transparent;
+        }
+    </style>
+
+    <!-- Accordion para eventos futuros -->
+    <div class="accordion mt-4" id="futureEventsAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFuture">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFuture" aria-expanded="true" aria-controls="collapseFuture">
+                    Eventos Futuros
+                </button>
+            </h2>
+            <div id="collapseFuture" class="accordion-collapse collapse show" aria-labelledby="headingFuture" data-bs-parent="#futureEventsAccordion">
+                <div class="accordion-body">
+                    {% if future_events %}
+                        <div class="row">
+                            {% for event in future_events %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100 d-flex flex-column">
+                                    <img src="{{ event.picture.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body flex-grow-1">
+                                        <h5 class="card-title">{{ event.name }}</h5>
+                                        <p class="card-text">{{ event.description }}</p>
+                                        <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
+                                        <p><img src="{% static 'images/hora.png' %}" alt="Hora" style="width: 20px; margin-right: 10px;"> {{ event.time }}</p>
+                                        <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
+                                        <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No tienes eventos próximos.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accordion para eventos pasados -->
+    <div class="accordion mt-4" id="pastEventsAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPast">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePast" aria-expanded="false" aria-controls="collapsePast">
+                    Eventos Pasados
+                </button>
+            </h2>
+            <div id="collapsePast" class="accordion-collapse collapse" aria-labelledby="headingPast" data-bs-parent="#pastEventsAccordion">
+                <div class="accordion-body">
+                    {% if past_events %}
+                        <div class="row">
+                            {% for event in past_events %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100 d-flex flex-column">
+                                    <img src="{{ event.picture.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body flex-grow-1">
+                                        <h5 class="card-title">{{ event.name }}</h5>
+                                        <p class="card-text">{{ event.description }}</p>
+                                        <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
+                                        <p><img src="{% static 'images/hora.png' %}" alt="Hora" style="width: 20px; margin-right: 10px;"> {{ event.time }}</p>
+                                        <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
+                                        <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No tienes eventos pasados.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

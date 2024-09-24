@@ -27,6 +27,8 @@ urlpatterns = [
     path('events/', eventViews.displayEvents, name='events'),
     path('accounts/', include('accounts.urls')),
     path('companies/', companyViews.companyDashboard, name='companies'),
+    path('events/subscribe/<int:event_id>/', eventViews.subscribe_event, name='subscribe_event'),
+    path('mis-eventos/', eventViews.my_events, name='my_events'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

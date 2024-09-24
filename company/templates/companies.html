@@ -44,9 +44,31 @@
                     <h5 class="card-title">{{ event.name }}</h5>
                     <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
                     <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
-                    <p><strong>Número de participantes:</strong> {{ event.attendees.count }}</p>
+                    <p><strong>Número de Asistentes:</strong> {{ event.attendees.count }}</p>
                 </div>
-
+                
+                <div class="accordion mt-auto" id="accordionAsistentes{{ forloop.counter }}">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingAsistentes{{ forloop.counter }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAsistentes{{ forloop.counter }}" aria-expanded="false" aria-controls="collapseAsistentes{{ forloop.counter }}">
+                                Ver asistentes
+                            </button>
+                        </h2>
+                        <div id="collapseAsistentes{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="headingAsistentes{{ forloop.counter }}" data-bs-parent="#accordionAsistentes{{ forloop.counter }}">
+                            <div class="accordion-body text-start"> 
+                                <ul>
+                                    {% for attendee in event.attendees.all %}
+                                        <li>{{ attendee.email }}</li>
+                                    {% empty %}
+                                        <li>No hay asistentes registrados.</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
                 <div class="accordion mt-auto" id="accordionEvent{{ forloop.counter }}">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="heading{{ forloop.counter }}">
@@ -55,12 +77,12 @@
                             </button>
                         </h2>
                         <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionEvent{{ forloop.counter }}">
-                            <div class="accordion-body text-start"> 
+                            <div class="accordion-body text-start">
                                 <ul>
                                     {% for company in event.participants.all %}
                                         <li>{{ company.name }}</li>
                                     {% empty %}
-                                        <p>No hay empresas participantes para este evento.</p>
+                                        <li>No hay empresas participantes para este evento.</li>
                                     {% endfor %}
                                 </ul>
                             </div>
@@ -77,6 +99,7 @@
                 </div>
             </div>
         </div>
+                
         {% endfor %}
         {% else %}
         <p>No ha organizado ningún evento.</p>

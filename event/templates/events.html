@@ -100,9 +100,19 @@
 
                 <div class="card-footer text-center">
                     {% if user.is_authenticated and not user.is_company %}
-                        <a href=" " class="btn" style="background-color: #bdecb6; color: white; border: none;">Inscríbete</a>
+                        {% if user in event.attendees.all %}
+                            <button class="btn" disabled style="background-color: grey; color: white; border: none;">Ya estás inscrito</button>
+                        {% else %}
+                        <form method="POST" action="{% url 'subscribe_event' event.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn" style="background-color: #66c158; color: white; border: none;" onclick="return confirm('¿Estás seguro de que quieres inscribirte a este evento?')">Inscríbete</button>
+                        </form>
+                        {% endif %}
+                    {% elif not user.is_authenticated %}
+                        <p class="text-muted">Para inscribirte al evento, primero debes <a href="{% url 'login' %}">iniciar sesión</a>.</p>
                     {% endif %}
                 </div>
+                
 
             </div>
         </div>

@@ -36,6 +36,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'events' %}">Eventos</a>
                     </li>
+                    {% if user.is_authenticated and not user.is_company %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_events' %}">Mis eventos</a>
+                    </li>
+                    {% endif %}
                     {% if user.is_authenticated and user.is_company %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'companies' %}">Portal empresas</a>
@@ -74,6 +79,16 @@
             </div>
         </div>
     </nav>
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- Contenido de cada template -->
     <div class="container mt-2">
