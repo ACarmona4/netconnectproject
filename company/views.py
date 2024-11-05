@@ -9,7 +9,7 @@ def companyDashboard(request):
         if request.method == 'POST' and 'delete_event_id' in request.POST:
             event_id = request.POST.get('delete_event_id')
             event = get_object_or_404(Event, id=event_id, organizer=request.user.company)
-            event.delete()  # Elimina el evento
+            event.delete() 
             messages.success(request, '¡Evento eliminado con éxito!')
             return redirect('companies')
 
@@ -20,7 +20,7 @@ def companyDashboard(request):
                 event = form.save(commit=False)
                 event.organizer = request.user.company
                 event.save()
-                form.save_m2m()  # Guardar la relación ManyToMany de participantes
+                form.save_m2m()  
                 messages.success(request, '¡Evento creado con éxito!')
                 return redirect('companies')
         else:
@@ -32,7 +32,7 @@ def companyDashboard(request):
         # Obtener la lista de asistentes por evento
         events_with_attendees = []
         for event in company_events:
-            attendees = event.attendees.all()  # Lista de asistentes para el evento
+            attendees = event.attendees.all()
             events_with_attendees.append({
                 'event': event,
                 'attendees': attendees

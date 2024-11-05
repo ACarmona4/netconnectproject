@@ -1,6 +1,7 @@
-/software/*
+/env/*
 *.pyc
 __pycache__/
 /env/
 /venv/
 .env
+/config/*
