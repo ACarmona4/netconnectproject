@@ -68,7 +68,6 @@
                     </div>
                 </div>
                 
-                
                 <div class="accordion mt-auto" id="accordionEvent{{ forloop.counter }}">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="heading{{ forloop.counter }}">
@@ -106,6 +105,32 @@
         {% endif %}
     </div>
 
+    <!-- Sección de Eventos en los que participa la empresa -->
+    <h3 class="mt-5">Eventos en los que participa {{ user.company.name }}</h3>
+    <div class="accordion mt-4" id="participatedEventsAccordion">
+        {% if participated_events %}
+            {% for event in participated_events %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingParticipated{{ forloop.counter }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseParticipated{{ forloop.counter }}" aria-expanded="false" aria-controls="collapseParticipated{{ forloop.counter }}">
+                        <strong>{{ event.name }}</strong>
+                    </button>
+                </h2>
+                <div id="collapseParticipated{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="headingParticipated{{ forloop.counter }}" data-bs-parent="#participatedEventsAccordion">
+                    <div class="accordion-body">
+                        <p><strong>Fecha:</strong> {{ event.date }}</p>
+                        <p><strong>Hora:</strong> {{ event.time }}</p>
+                        <p><strong>Ubicación:</strong> {{ event.location }}</p>
+                        <p><strong>Organizador:</strong> {{ event.organizer.name }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No participas en ningún evento actualmente.</p>
+        {% endif %}
+    </div>
+
     <!-- Crear nuevos eventos -->
     <h2 class="mb-4 mt-5">Organizar un nuevo evento</h2>
     <p>¿Listo para organizar un nuevo evento? Completa el formulario a continuación y nosotros nos encargamos del resto.</p>
@@ -124,9 +149,5 @@
             </form>
         </div>
     </div>
-
-    <!-- Datos de asistentes (Futura entrega) -->
-    <h2 class="mt-5">Datos de asistentes</h2>
-    <p>Aquí podrás ver datos relacionados con los asistentes a tus eventos.</p>
 </div>
 {% endblock %}

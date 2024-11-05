@@ -39,6 +39,7 @@ def displayEvents(request):
         'carousel_events': carousel_events,  
         'events': events 
     })
+    
 @login_required
 def subscribe_event(request, event_id):
     if request.user.is_authenticated and not request.user.is_company:
@@ -46,15 +47,27 @@ def subscribe_event(request, event_id):
         
         if request.user not in event.attendees.all():
             event.attendees.add(request.user)
-            messages.success(request, f'Te has inscrito exitosamente al evento: {event.name}')
+            messages.success(request, f'Te has inscrito exitosamente al evento {event.name}')
             user_email = request.user.email
             evento_confirmacion(request, user_email, event_id)
         else:
-            messages.warning(request, f'Ya estás inscrito en el evento: {event.name}')
+            messages.warning(request, f'Ya estás inscrito en el evento {event.name}')
     else:
         messages.error(request, 'Debes iniciar sesión para inscribirte en un evento.')
     
     return redirect('events') 
+
+@login_required
+def unsubscribe_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    if request.user in event.attendees.all():
+        event.attendees.remove(request.user)
+        messages.success(request, f'¡Hemos anulado la inscripción! Ya no estás inscrito a {event.name}')
+    else:
+        messages.warning(request, 'No estás inscrito en este evento.')
+
+    return redirect('my_events')  
 
 @login_required
 def my_events(request):

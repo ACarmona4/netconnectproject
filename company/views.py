@@ -38,10 +38,14 @@ def companyDashboard(request):
                 'attendees': attendees
             })
 
+        # Obtener eventos en los que la empresa participa
+        participated_events = Event.objects.filter(participants=request.user.company)
+
         return render(request, 'companies.html', {
             'form': form,
             'company_events': company_events,
-            'events_with_attendees': events_with_attendees,  # Enviar los eventos con asistentes
+            'events_with_attendees': events_with_attendees,
+            'participated_events': participated_events,  # Enviar los eventos en los que participa la empresa
         })
     
     else:
