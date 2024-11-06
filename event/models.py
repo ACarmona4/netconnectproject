@@ -9,6 +9,7 @@ class Event(models.Model):
     description = models.TextField(max_length=300)
     date = models.DateField()
     time = models.TimeField()
+    time_finish = models.TimeField(default='23:59:59')
     location = models.CharField(max_length=100)
     organizer = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='organized_events')
     participants = models.ManyToManyField(Company, blank=True, related_name='participated_events')

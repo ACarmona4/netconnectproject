@@ -1,5 +1,6 @@
 import os
 import base64
+from datetime import datetime, timedelta
 from .models import Event
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
@@ -15,11 +16,16 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 
+# Cargar variables de entorno
+load_dotenv()
+CREDENTIALS_FILE = os.getenv('GOOGLE_CREDENTIALS_PATH')
+TOKEN_FILE = os.getenv('GOOGLE_TOKEN_PATH')
 
-# Create your views here.
+# Página de inicio
 def home(request):
     return render(request, 'home.html')
 
+# Mostrar eventos
 def displayEvents(request):
     current_time = timezone.now()
 
@@ -39,24 +45,23 @@ def displayEvents(request):
         'carousel_events': carousel_events,  
         'events': events 
     })
-    
+
+# Inscribirse a un evento
 @login_required
 def subscribe_event(request, event_id):
-    if request.user.is_authenticated and not request.user.is_company:
-        event = get_object_or_404(Event, id=event_id)
-        
-        if request.user not in event.attendees.all():
-            event.attendees.add(request.user)
-            messages.success(request, f'Te has inscrito exitosamente al evento {event.name}')
-            user_email = request.user.email
-            evento_confirmacion(request, user_email, event_id)
-        else:
-            messages.warning(request, f'Ya estás inscrito en el evento {event.name}')
-    else:
-        messages.error(request, 'Debes iniciar sesión para inscribirte en un evento.')
+    event = get_object_or_404(Event, id=event_id)
     
-    return redirect('events') 
+    if request.user not in event.attendees.all():
+        event.attendees.add(request.user)
+        messages.success(request, f'Te has inscrito exitosamente al evento {event.name}')
+        user_email = request.user.email
+        evento_confirmacion(request, user_email, event_id)
+    else:
+        messages.warning(request, f'Ya estás inscrito en el evento {event.name}')
+    
+    return redirect('my_events')
 
+#Desinscribirse de un evento
 @login_required
 def unsubscribe_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -69,8 +74,9 @@ def unsubscribe_event(request, event_id):
     else:
         messages.warning(request, 'No estás inscrito en este evento.')
 
-    return redirect('my_events')  
+    return redirect('my_events')
 
+# Ver eventos en los que el usuario está inscrito
 @login_required
 def my_events(request):
     current_time = timezone.now()
@@ -82,28 +88,70 @@ def my_events(request):
         'future_events': future_events,
         'past_events': past_events
     })
+
+# Añadir un evento al Google Calendar del usuario
+@login_required
+def add_event_to_google_calendar(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+
+    user_token_file = f'tokens/token_{request.user.id}.json'
     
-
-load_dotenv()
-CREDENTIALS_FILE = os.getenv('GOOGLE_CREDENTIALS_PATH')
-TOKEN_FILE = os.getenv('GOOGLE_TOKEN_PATH')
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-
-def gmail_authenticate():
     creds = None
-    if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+    if os.path.exists(user_token_file):
+        creds = Credentials.from_authorized_user_file(user_token_file, SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
             creds = flow.run_local_server(port=8080)
+        os.makedirs(os.path.dirname(user_token_file), exist_ok=True)
+        with open(user_token_file, 'w') as token_file:
+            token_file.write(creds.to_json())
+    
+    service = build('calendar', 'v3', credentials=creds)
+    event_data = {
+        'summary': event.name,
+        'location': event.location,
+        'description': f"Organizado por {event.organizer.name}",
+        'start': {
+            'dateTime': datetime.combine(event.date, event.time).isoformat(),
+            'timeZone': 'America/Bogota',
+        },
+        'end': {
+            'dateTime': datetime.combine(event.date, event.time_finish).isoformat(),
+            'timeZone': 'America/Bogota',
+        },
+    }
+
+    try:
+        created_event = service.events().insert(calendarId='primary', body=event_data).execute()
+        messages.success(request, f"El evento {event.name} ha sido añadido a tu Google Calendar.")
+        return redirect('my_events')
+    except Exception as e:
+        messages.error(request, f"No se pudo añadir el evento al calendario: {e}")
+        return redirect('my_events')
+    
+# Autenticación de Gmail
+SCOPES_GMAIL = ['https://www.googleapis.com/auth/gmail.send']
+
+def gmail_authenticate():
+    creds = None
+    if os.path.exists(TOKEN_FILE):
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES_GMAIL)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES_GMAIL)
+            creds = flow.run_local_server(port=8080)
         os.makedirs(os.path.dirname(TOKEN_FILE), exist_ok=True)  
         with open(TOKEN_FILE, 'w') as token_file:
             token_file.write(creds.to_json())
     return creds
 
+# Enviar correo electrónico
 def send_email(user_email, subject, message):
     creds = gmail_authenticate()
     service = build('gmail', 'v1', credentials=creds)
@@ -120,9 +168,10 @@ def send_email(user_email, subject, message):
     except Exception as e:
         return HttpResponse(f'Error enviando el correo: {str(e)}')
 
+# Funciones de confirmación y desconfirmación de eventos por correo
 def evento_confirmacion(request, user_email, event_id):
     event = Event.objects.get(id=event_id)
-    subject = f"Confirmación de inscripción al evento: {event.name}"
+    subject = f"Confirmación de inscripción al evento {event.name}"
     
     message = f"""
     <html>

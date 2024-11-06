@@ -21,6 +21,23 @@
         .accordion-item {
             background-color: transparent;
         }
+        .add-to-calendar-btn {
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #001f3f;
+            padding: 10px 18px; 
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .add-to-calendar-btn img {
+            width: 45px; 
+            height: 33px; 
+            margin-right: 10px;
+        }
     </style>
 
     <!-- Accordion para eventos futuros -->
@@ -47,9 +64,14 @@
                                         <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
                                         <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
                                         
+                                        <a href="{% url 'add_event_to_google_calendar' event.id %}" class="add-to-calendar-btn">
+                                            Añadir a Google Calendar
+                                            <img src="{% static 'images/calendar.png' %}" alt="Google Calendar">
+                                        </a>
+
                                         <form action="{% url 'unsubscribe_event' event.id %}" method="post" style="display: inline;">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn" style="background-color: #001f3f; color: white; border: none"; onclick="return confirm('¿Estás seguro de que quieres anular tu inscripción a este evento?')">Anular Inscripción</button>
+                                            <button type="submit" class="btn" style="background-color: #001f3f; color: white; border: none;" onclick="return confirm('¿Estás seguro de que quieres anular tu inscripción a este evento?')">Anular Inscripción</button>
                                         </form>
                                     </div>
                                 </div>
