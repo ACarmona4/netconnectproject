@@ -64,6 +64,8 @@ def unsubscribe_event(request, event_id):
     if request.user in event.attendees.all():
         event.attendees.remove(request.user)
         messages.success(request, f'¡Hemos anulado la inscripción! Ya no estás inscrito a {event.name}')
+        user_email = request.user.email
+        evento_desconfirmacion(request, user_email, event_id)
     else:
         messages.warning(request, 'No estás inscrito en este evento.')
 
@@ -136,6 +138,25 @@ def evento_confirmacion(request, user_email, event_id):
                 <li><strong>Organizador:</strong> {event.organizer.name}</li>
             </ul>
             <p>Esperamos contar con tu presencia y que disfrutes de esta experiencia.</p>
+            <p>Atentamente,</p>
+            <p>El equipo de NetConnect</p>
+        </body>
+    </html>
+    """
+    
+    return send_email(user_email, subject, message)
+
+def evento_desconfirmacion(request, user_email, event_id):
+    event = Event.objects.get(id=event_id)
+    subject = f"Anulación de inscripción al evento {event.name}"
+    
+    message = f"""
+    <html>
+        <body>
+            <h2>Anulación de Inscripción al Evento</h2>
+            <p>Estimado {request.user.name},</p>
+            <p>¡Hemos anulado tu inscripción al evento <strong>{event.name}</strong>!</p>
+            <p>Esperamos contar con tu presencia en futuros eventos.</p>
             <p>Atentamente,</p>
             <p>El equipo de NetConnect</p>
         </body>
