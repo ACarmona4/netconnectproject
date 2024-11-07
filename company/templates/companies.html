@@ -5,8 +5,7 @@
 
 {% block content %}
 <div class="container mt-2"> 
-    
-    <!-- Nombre de la empresa y logo -->
+    <!-- Información de la empresa y logo -->
     {% if user.is_company %}
     <div class="row align-items-center mb-2">
         <div class="col-md-6 text-start">
@@ -18,12 +17,9 @@
     </div>
     {% endif %}
 
-    <!-- Línea divisora -->
     <hr style="border: 1px solid #001f3f; margin-top: 0;">
-
-    <!-- Título de la página -->
     <h1 class="mb-1"><span style="color: #001f3f; font-family: 'Poppins', sans-serif; font-weight: 600;">Bienvenido al panel de empresas</span></h1>
-    <p>Desde aquí podrás gestionar tus eventos y ver información relevante sobre los eventos que has creado. <strong>Gestiona toda la logística del evento y los asistentes desde un solo lugar.</strong></p>
+    <p>Gestiona tus eventos y la logística desde un solo lugar.</p>
 
     {% if messages %}
         <div class="alert alert-success" role="alert">
@@ -33,90 +29,42 @@
         </div>
     {% endif %}
 
-    <!-- Eventos organizados por la empresa -->
-    <h3 class="mt-5">Eventos organizados por {{ user.company.name }}</h3>
-    <div class="row">
-        {% if user.company.organized_events.all %}
-        {% for event in user.company.organized_events.all %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 d-flex flex-column">
-                <div class="card-body flex-grow-1">
-                    <h5 class="card-title">{{ event.name }}</h5>
-                    <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
-                    <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
-                    <p><strong>Número de Asistentes:</strong> {{ event.attendees.count }}</p>
-                </div>
-                
-                <div class="accordion mt-auto" id="accordionAsistentes{{ forloop.counter }}">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingAsistentes{{ forloop.counter }}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAsistentes{{ forloop.counter }}" aria-expanded="false" aria-controls="collapseAsistentes{{ forloop.counter }}">
-                                Ver asistentes
-                            </button>
-                        </h2>
-                        <div id="collapseAsistentes{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="headingAsistentes{{ forloop.counter }}" data-bs-parent="#accordionAsistentes{{ forloop.counter }}">
-                            <div class="accordion-body text-start"> 
-                                <ul>
-                                    {% for attendee in event.attendees.all %}
-                                        <li>{{ attendee.email }}</li>
-                                    {% empty %}
-                                        <li>No hay asistentes registrados.</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
+    <div class="container mt-2">
+        <h3 class="mt-5">Eventos organizados por {{ user.company.name }}</h3>
+    
+        <div class="row">
+            {% for event in company_events %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 d-flex flex-column">
+                    <div class="card-body flex-grow-1">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                        <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
+                        <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
                     </div>
-                </div>
-                
-                <div class="accordion mt-auto" id="accordionEvent{{ forloop.counter }}">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
-                                Ver empresas participantes
-                            </button>
-                        </h2>
-                        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionEvent{{ forloop.counter }}">
-                            <div class="accordion-body text-start">
-                                <ul>
-                                    {% for company in event.participants.all %}
-                                        <li>{{ company.name }}</li>
-                                    {% empty %}
-                                        <li>No hay empresas participantes para este evento.</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card-footer text-center">
-                            <form method="POST" action="{% url 'companies' %}" style="display: inline-block;">
-                                {% csrf_token %}
-                                <input type="hidden" name="delete_event_id" value="{{ event.id }}">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este evento?')">Eliminar evento</button>
-                            </form>
-                            <button class="btn" style="background-color: #001f3f; color: white; margin-left: 10px;">Modificar evento</button>
-                        </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'manage_event' event.id %}" class="btn btn-primary">Ver detalles</a> <!-- Enlace a la página de detalles del evento -->
                     </div>
                 </div>
             </div>
+            {% empty %}
+            <p>No ha organizado ningún evento.</p>
+            {% endfor %}
         </div>
-                
-        {% endfor %}
-        {% else %}
-        <p>No ha organizado ningún evento.</p>
-        {% endif %}
     </div>
 
+
     <!-- Sección de Eventos en los que participa la empresa -->
-    <h3 class="mt-5">Eventos en los que participa {{ user.company.name }}</h3>
-    <div class="accordion mt-4" id="participatedEventsAccordion">
-        {% if participated_events %}
-            {% for event in participated_events %}
+    <h3 class="mt-5">Eventos Futuros en los que participa {{ user.company.name }}</h3>
+    <div class="accordion mt-4" id="futureEventsAccordion">
+        {% if future_events %}
+            {% for event in future_events %}
             <div class="accordion-item">
-                <h2 class="accordion-header" id="headingParticipated{{ forloop.counter }}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseParticipated{{ forloop.counter }}" aria-expanded="false" aria-controls="collapseParticipated{{ forloop.counter }}">
+                <h2 class="accordion-header" id="headingFuture{{ forloop.counter }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFuture{{ forloop.counter }}" aria-expanded="false" aria-controls="collapseFuture{{ forloop.counter }}">
                         <strong>{{ event.name }}</strong>
                     </button>
                 </h2>
-                <div id="collapseParticipated{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="headingParticipated{{ forloop.counter }}" data-bs-parent="#participatedEventsAccordion">
+                <div id="collapseFuture{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="headingFuture{{ forloop.counter }}" data-bs-parent="#futureEventsAccordion">
                     <div class="accordion-body">
                         <p><strong>Fecha:</strong> {{ event.date }}</p>
                         <p><strong>Hora:</strong> {{ event.time }}</p>
@@ -127,7 +75,32 @@
             </div>
             {% endfor %}
         {% else %}
-            <p>No participas en ningún evento actualmente.</p>
+            <p>No participas en eventos futuros actualmente.</p>
+        {% endif %}
+    </div>
+
+    <h3 class="mt-5">Eventos Pasados en los que participó {{ user.company.name }}</h3>
+    <div class="accordion mt-4" id="pastEventsAccordion">
+        {% if past_events %}
+            {% for event in past_events %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingPast{{ forloop.counter }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePast{{ forloop.counter }}" aria-expanded="false" aria-controls="collapsePast{{ forloop.counter }}">
+                        <strong>{{ event.name }}</strong>
+                    </button>
+                </h2>
+                <div id="collapsePast{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="headingPast{{ forloop.counter }}" data-bs-parent="#pastEventsAccordion">
+                    <div class="accordion-body">
+                        <p><strong>Fecha:</strong> {{ event.date }}</p>
+                        <p><strong>Hora:</strong> {{ event.time }}</p>
+                        <p><strong>Ubicación:</strong> {{ event.location }}</p>
+                        <p><strong>Organizador:</strong> {{ event.organizer.name }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No hay eventos pasados en los que hayas participado.</p>
         {% endif %}
     </div>
 
@@ -150,4 +123,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

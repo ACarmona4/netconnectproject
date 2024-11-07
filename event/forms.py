@@ -1,6 +1,7 @@
 from django import forms
 from .models import Event
 from company.models import Company
+from .models import AdvertiserRequest
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -40,3 +41,35 @@ class EventForm(forms.ModelForm):
         label="Empresas participantes",  
         help_text="Selecciona las empresas que participarán en este evento."  
     )
+
+class AdvertiseForm(forms.ModelForm):
+    class Meta:
+        model = AdvertiserRequest
+        fields = ['company_name', 'contact_name', 'contact_email', 'logo', 'description', 'message']
+        labels = {
+            'company_name': 'Nombre de la Empresa',
+            'contact_name': 'Nombre de Contacto',
+            'contact_email': 'Correo Electrónico de Contacto',
+            'logo': 'Logo de la Empresa',
+            'description': 'Descripción de la Empresa',
+            'message': 'Mensaje de Solicitud'
+        }
+
+    def __init__(self, *args, **kwargs):
+        # Recibe una empresa existente, si está en los argumentos
+        existing_company = kwargs.pop('existing_company', None)
+        super().__init__(*args, **kwargs)
+
+        if existing_company:
+            # Si la empresa ya existe, oculta todos los campos excepto el mensaje
+            for field in ['company_name', 'contact_name', 'contact_email', 'logo', 'description']:
+                if field in self.fields:
+                    self.fields[field].widget = forms.HiddenInput()
+                    self.fields[field].required = False
+
+            # Inicializa los campos con los datos de la empresa existente
+            self.fields['company_name'].initial = existing_company.name
+            self.fields['contact_name'].initial = existing_company.personInCharge
+            self.fields['contact_email'].initial = existing_company.email
+            self.fields['logo'].initial = existing_company.logo
+            self.fields['description'].initial = existing_company.description

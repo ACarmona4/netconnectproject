@@ -1,7 +1,7 @@
 import os
 import base64
 from datetime import datetime, timedelta
-from .models import Event
+from .models import Event, AdvertiserRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -15,6 +15,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
+from .forms import AdvertiseForm
 
 # Cargar variables de entorno
 load_dotenv()
@@ -46,6 +47,42 @@ def displayEvents(request):
         'events': events 
     })
 
+# Detalles de evento
+def event_detail(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Obtener los nombres de las empresas en el modelo `Company` que participan en el evento
+    participant_names = list(event.participants.values_list('name', flat=True))
+    
+    # Obtener las solicitudes aceptadas en `AdvertiserRequest`
+    accepted_requests = AdvertiserRequest.objects.filter(event=event, status='accepted')
+    accepted_request_names = list(accepted_requests.values_list('company_name', flat=True))
+    
+    # Combina ambas listas para tener todas las empresas participantes
+    all_participant_names = participant_names + accepted_request_names
+
+    return render(request, 'event_detail.html', {
+        'event': event,
+        'accepted_requests': accepted_requests,
+        'all_participant_names': all_participant_names,
+    })
+def manageEvent(request, event_id):
+    event = get_object_or_404(Event, id=event_id, organizer=request.user.company)
+    advertiser_requests = AdvertiserRequest.objects.filter(event=event, status='pending')
+    attendees = event.attendees.all()
+    # Obtén las empresas participantes que ya están en el modelo `Company`
+    registered_companies = event.participants.all()
+
+    # Obtén las solicitudes aceptadas en `AdvertiserRequest`
+    accepted_requests = AdvertiserRequest.objects.filter(event=event, status='accepted')
+
+    return render(request, 'manage_event.html', {
+        'event': event,
+        'advertiser_requests': advertiser_requests,
+        'attendees': attendees,
+        'registered_companies': registered_companies,
+        'accepted_requests': accepted_requests,
+    })
 # Inscribirse a un evento
 @login_required
 def subscribe_event(request, event_id):
@@ -75,6 +112,36 @@ def unsubscribe_event(request, event_id):
         messages.warning(request, 'No estás inscrito en este evento.')
 
     return redirect('my_events')
+
+
+def advertise_form(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    existing_company = None
+
+    if request.user.is_authenticated and hasattr(request.user, 'company'):
+        # Si el usuario tiene un perfil de empresa asociado, usa sus datos
+        existing_company = request.user.company
+
+    if request.method == 'POST':
+        form = AdvertiseForm(request.POST, request.FILES, existing_company=existing_company)
+        if form.is_valid():
+            advertiser_request = form.save(commit=False)
+            advertiser_request.event = event  # Asigna el evento
+
+            # Si la empresa ya existe, rellena los datos automáticamente
+            if existing_company:
+                advertiser_request.company_name = existing_company.name
+                advertiser_request.contact_name = existing_company.personInCharge
+                advertiser_request.contact_email = existing_company.email
+                advertiser_request.logo = existing_company.logo
+                advertiser_request.description = existing_company.description
+            
+            advertiser_request.save()
+            return redirect('event_detail', event_id=event.id)
+    else:
+        form = AdvertiseForm(existing_company=existing_company)
+
+    return render(request, 'advertise_form.html', {'form': form, 'event': event})
 
 # Ver eventos en los que el usuario está inscrito
 @login_required

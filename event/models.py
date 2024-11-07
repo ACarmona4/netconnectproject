@@ -17,3 +17,27 @@ class Event(models.Model):
     
     def __str__(self):
         return (f'{self.name} - {self.date}')
+    
+
+class AdvertiserRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pendiente'),
+        ('accepted', 'Aceptada'),
+        ('rejected', 'Rechazada'),
+    ]
+
+    company_name = models.CharField(max_length=255)
+    contact_name = models.CharField(max_length=255)
+    contact_email = models.EmailField()
+    message = models.TextField()
+    description = models.TextField()
+    logo = models.ImageField(upload_to='company/images/')  
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)  # Relaciona con el evento
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')  # Estado de la solicitud
+
+    def __str__(self):
+        return f"{self.company_name} - {self.event.name}"
+    
+
+
+        

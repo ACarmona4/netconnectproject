@@ -66,55 +66,19 @@
     <div id="search-results" class="row">
         {% for event in events %}
         <div class="col-md-4 mb-4">
-            <div class="card h-100 d-flex flex-column">
-                <img src="{{ event.picture.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
-                <div class="card-body flex-grow-1">
-                    <h5 class="card-title">{{ event.name }}</h5>
-                    <p class="card-text">{{ event.description }}</p>
-                    <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
-                    <p><img src="{% static 'images/hora.png' %}" alt="Hora" style="width: 20px; margin-right: 10px;"> {{ event.time }}</p>
-                    <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
-                    <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
-                </div>
-
-                <div class="accordion mt-auto" id="accordionEvent{{ forloop.counter }}">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
-                                Ver empresas participantes
-                            </button>
-                        </h2>
-                        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionEvent{{ forloop.counter }}">
-                            <div class="accordion-body text-start"> 
-                                <ul>
-                                    {% for company in event.participants.all %}
-                                        <li>{{ company.name }}</li>
-                                    {% empty %}
-                                        <p>No hay empresas participantes para este evento.</p>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
+            <a href="{% url 'event_detail' event.id %}" class="text-decoration-none text-dark">
+                <div class="card h-100 d-flex flex-column">
+                    <img src="{{ event.picture.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body flex-grow-1">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                        <p class="card-text">{{ event.description }}</p>
+                        <p><img src="{% static 'images/fecha.png' %}" alt="Fecha" style="width: 20px; margin-right: 10px;"> {{ event.date }}</p>
+                        <p><img src="{% static 'images/hora.png' %}" alt="Hora" style="width: 20px; margin-right: 10px;"> {{ event.time }}</p>
+                        <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
+                        <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
                     </div>
                 </div>
-
-                <div class="card-footer text-center">
-                    {% if user.is_authenticated and not user.is_company %}
-                        {% if user in event.attendees.all %}
-                            <button class="btn" disabled style="background-color: grey; color: white; border: none;">Ya estás inscrito</button>
-                        {% else %}
-                        <form method="POST" action="{% url 'subscribe_event' event.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn" style="background-color: #66c158; color: white; border: none;" onclick="return confirm('¿Estás seguro de que quieres inscribirte a este evento?')">Inscríbete</button>
-                        </form>
-                        {% endif %}
-                    {% elif not user.is_authenticated %}
-                        <p class="text-muted">Para inscribirte al evento, primero debes <a href="{% url 'login' %}">iniciar sesión</a>.</p>
-                    {% endif %}
-                </div>
-                
-
-            </div>
+            </a>
         </div>
         {% endfor %}
     </div>

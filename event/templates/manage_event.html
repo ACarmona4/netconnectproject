@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión del Evento - {{ event.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ event.name }}</h2>
+    <p><strong>Fecha:</strong> {{ event.date }}</p>
+    <p><strong>Ubicación:</strong> {{ event.location }}</p>
+    <p><strong>Descripción:</strong> {{ event.description }}</p>
+
+    <!-- Lista de Asistentes -->
+    <div class="mt-5">
+        <h3>Lista de Asistentes</h3>
+        {% if attendees %}
+            <ul>
+                {% for attendee in attendees %}
+                    <li>{{ attendee.name }} - {{ attendee.email }}</li> <!-- Ajusta según los campos de tu modelo de usuario -->
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay asistentes registrados para este evento.</p>
+        {% endif %}
+    </div>
+
+    <div class="mt-5">
+        <h3 class="text-center" style="color: #001f3f;">Empresas Participantes</h3>
+        <div class="row justify-content-center mt-4">
+            {% for company in event.participants.all %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <img src="{{ company.logo.url }}" class="card-img-top p-3" alt="Logo de {{ company.name }}" style="height: 150px; object-fit: contain;">
+                        <h5 class="card-title" style="color: #001f3f;">{{ company.name }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p class="text-center">No hay empresas participantes para este evento.</p>
+            {% endfor %}
+            {% for request in accepted_requests %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <img src="{{ request.logo.url }}" class="card-img-top p-3" alt="Logo de {{ request.company_name }}" style="height: 150px; object-fit: contain;">
+                        <h5 class="card-title" style="color: #001f3f;">{{ request.company_name }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p class="text-center">No hay empresas participantes para este evento.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Solicitudes de Anunciantes</h3>
+    {% if advertiser_requests %}
+        <div class="requests-container">
+            {% for request in advertiser_requests %}
+                <div class="request-card">
+                    <!-- Encabezado con los detalles principales -->
+                    <div class="request-header">
+                        <div>
+                            <strong>Empresa:</strong> {{ request.company_name }}<br>
+                            <strong>Contacto:</strong> {{ request.contact_name }}<br>
+                            <strong>Correo:</strong> {{ request.contact_email }}<br>
+                            <strong>Mensaje:</strong>
+
+                        </div>
+                        <div class="logo">
+                            <img src="{{ request.logo.url }}" alt="Logo de {{ request.company_name }}">
+                        </div>
+                    </div>
+
+                    <!-- Mensaje con título sobre el texto -->
+                    <div class="request-message">
+                        <p>{{ request.message }}</p>
+                    </div>
+                    
+                    <div class="request-actions">
+                        <a href="{% url 'update_advertiser_request' request.id 'accept' %}" class="btn btn-success btn-sm">Aceptar</a>
+                        <a href="{% url 'update_advertiser_request' request.id 'reject' %}" class="btn btn-danger btn-sm">Rechazar</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No hay solicitudes pendientes para este evento.</p>
+    {% endif %}
+</div>
+
+<style>
+    /* Contenedor principal de las tarjetas */
+    .requests-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Estilo de cada tarjeta de solicitud */
+    .request-card {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Encabezado con detalles principales y logo */
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Estilo para el logo (sin borde) */
+    .request-header .logo img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    /* Mensaje con altura máxima y scroll */
+    .request-message {
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        font-size: 0.95rem;
+        color: #333;
+        position: relative;
+        max-height: 150px; /* Altura máxima */
+        overflow-y: auto;  /* Desplazamiento vertical */
+    }
+
+    .message-label {
+        position: absolute;
+        top: -12px;
+        left: 10px;
+        background-color: #f9f9f9;
+        padding: 0 5px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    /* Acciones alineadas a la derecha */
+    .request-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .request-actions .btn {
+        width: 80px;
+    }
+</style>
+    <!-- Botones para eliminar o modificar el evento -->
+    <form method="POST" action="{% url 'companies' %}">
+        {% csrf_token %}
+        <input type="hidden" name="delete_event_id" value="{{ event.id }}">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este evento?')">Eliminar evento</button>
+        <a href="" class="btn btn-primary">Modificar evento</a>
+    </form>
+</div>
+{% endblock %}

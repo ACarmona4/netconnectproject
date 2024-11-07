@@ -31,6 +31,10 @@ urlpatterns = [
     path('mis-eventos/', eventViews.my_events, name='my_events'),
     path('unsubscribe_event/<int:event_id>/', eventViews.unsubscribe_event, name='unsubscribe_event'),
     path('add_event_to_google_calendar/<int:event_id>/', eventViews.add_event_to_google_calendar, name='add_event_to_google_calendar'),
+    path('event/<int:event_id>/', eventViews.event_detail, name='event_detail'),
+    path('evento/<int:event_id>/postulate/', eventViews.advertise_form, name='advertise_form'),
+    path('solicitud/<int:request_id>/<str:action>/', companyViews.update_advertiser_request, name='update_advertiser_request'),
+    path('gestion/<int:event_id>/', eventViews.manageEvent, name='manage_event'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
