@@ -37,7 +37,11 @@
                         </form>
                     {% endif %}
                 {% elif not user.is_authenticated %}
-                    <p class="text-muted mt-3">Para inscribirte al evento, primero debes <a href="{% url 'login' %}">iniciar sesión</a>.</p>
+                <p class="text-muted mt-3">
+                    Para inscribirte al evento, primero debes 
+                    <a href="{% url 'login' %}">iniciar sesión</a> o 
+                    <a href="{% url 'register' %}?next_event={{ event.id }}">crear una cuenta</a>.
+                </p>
                 {% endif %}
             </div>
         </div>
