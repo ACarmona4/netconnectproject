@@ -35,6 +35,9 @@ urlpatterns = [
     path('evento/<int:event_id>/postulate/', eventViews.advertise_form, name='advertise_form'),
     path('solicitud/<int:request_id>/<str:action>/', companyViews.update_advertiser_request, name='update_advertiser_request'),
     path('gestion/<int:event_id>/', eventViews.manageEvent, name='manage_event'),
+    path('events/<int:event_id>/qr/<int:user_id>/', eventViews.view_qr_code, name='view_qr_code'),
+    path('verify_qr_code/<int:user_id>/<int:event_id>/', eventViews.verify_qr_code, name='verify_qr_code'),
+    path('event/<int:event_id>/qr/', eventViews.generate_event_qr, name='generate_event_qr'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

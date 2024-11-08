@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verificación de Asistencia{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="mb-4" style="color: #28a745; font-family: 'Poppins', sans-serif; font-weight: 600;">Asistencia Verificada con Éxito</h1>
+        <p class="lead">La asistencia de este usuario ha sido verificada correctamente para el evento.</p>
+        <div class="card mt-4" style="max-width: 400px; margin: auto;">
+            <div class="card-body">
+                <h5 class="card-title" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Información del Asistente</h5>
+                <ul class="list-group list-group-flush text-start">
+                    <li class="list-group-item"><strong>Nombre:</strong> {{ user.name }}</li>
+                    <li class="list-group-item"><strong>Apellido:</strong> {{ user.last_name }}</li>
+                    <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                    <li class="list-group-item"><strong>Teléfono:</strong> {{ user.phone }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

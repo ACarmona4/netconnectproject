@@ -6,17 +6,12 @@ from django.utils import timezone
 
 def companyDashboard(request):
     if request.user.is_authenticated and request.user.is_company:
-        # Obtener eventos organizados por la empresa
+
         company_events = Event.objects.filter(organizer=request.user.company)
-        
-        # Obtener eventos en los que la empresa participa
         now = timezone.now().date()
         participated_events = Event.objects.filter(participants=request.user.company)
-
-        # Dividir eventos en futuros y pasados
         future_events = participated_events.filter(date__gte=now)
         past_events = participated_events.filter(date__lt=now)
-        #Crear Evento
 
         if request.method == 'POST' and 'create_event' in request.POST:
             form = EventForm(request.POST, request.FILES)
@@ -37,7 +32,6 @@ def companyDashboard(request):
             'form': form
         })
     else:
-        # Redirige si el usuario no es una empresa o no está autenticado
         return redirect('login')
 
     
@@ -46,7 +40,6 @@ def update_advertiser_request(request, request_id, action):
     if action == 'accept':
         advertiser_request.status = 'accepted'
         advertiser_request.save()
-        # Agrega la empresa a los participantes del evento
         messages.success(request, f'¡Solicitud de {advertiser_request.company_name} aceptada!')
     elif action == 'reject':
         advertiser_request.status = 'rejected'

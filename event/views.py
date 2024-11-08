@@ -1,21 +1,25 @@
 import os
 import base64
+import qrcode
+from io import BytesIO
+from django.urls import reverse
+from django.conf import settings
 from datetime import datetime, timedelta
-from .models import Event, AdvertiserRequest
+from .models import Event, Attendance, AdvertiserRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib import messages
-from .forms import EventForm
+from .forms import EventForm, AdvertiseForm
 from email.mime.text import MIMEText
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+from django.core.files.base import ContentFile
 from dotenv import load_dotenv
-from .forms import AdvertiseForm
 
 # Cargar variables de entorno
 load_dotenv()
@@ -47,18 +51,12 @@ def displayEvents(request):
         'events': events 
     })
 
-# Detalles de evento
+# Detalles de evento (Perfil del evento)
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    
-    # Obtener los nombres de las empresas en el modelo `Company` que participan en el evento
     participant_names = list(event.participants.values_list('name', flat=True))
-    
-    # Obtener las solicitudes aceptadas en `AdvertiserRequest`
     accepted_requests = AdvertiserRequest.objects.filter(event=event, status='accepted')
     accepted_request_names = list(accepted_requests.values_list('company_name', flat=True))
-    
-    # Combina ambas listas para tener todas las empresas participantes
     all_participant_names = participant_names + accepted_request_names
 
     return render(request, 'event_detail.html', {
@@ -66,23 +64,41 @@ def event_detail(request, event_id):
         'accepted_requests': accepted_requests,
         'all_participant_names': all_participant_names,
     })
+    
+# Detalles del evento (Panel de empresas)
 def manageEvent(request, event_id):
     event = get_object_or_404(Event, id=event_id, organizer=request.user.company)
     advertiser_requests = AdvertiserRequest.objects.filter(event=event, status='pending')
-    attendees = event.attendees.all()
-    # Obtén las empresas participantes que ya están en el modelo `Company`
     registered_companies = event.participants.all()
-
-    # Obtén las solicitudes aceptadas en `AdvertiserRequest`
     accepted_requests = AdvertiserRequest.objects.filter(event=event, status='accepted')
+    
+    attendees = event.attendees.all()
+    
+    verified_attendees = Attendance.objects.filter(event=event, attended=True).select_related('user')
 
     return render(request, 'manage_event.html', {
         'event': event,
         'advertiser_requests': advertiser_requests,
-        'attendees': attendees,
+        'attendees': attendees, 
+        'verified_attendees': verified_attendees,  
         'registered_companies': registered_companies,
         'accepted_requests': accepted_requests,
     })
+    
+# Generar QR del evento
+def generate_event_qr(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    registration_url = request.build_absolute_uri(f"{reverse('register')}?next_event={event.id}")
+
+    qr = qrcode.make(registration_url)
+    qr_io = BytesIO()
+    qr.save(qr_io, 'PNG')
+    qr_io.seek(0)
+
+    response = HttpResponse(qr_io, content_type="image/png")
+    response['Content-Disposition'] = f'inline; filename=qr_event_{event.id}.png'
+    return response
+    
 # Inscribirse a un evento
 @login_required
 def subscribe_event(request, event_id):
@@ -91,6 +107,15 @@ def subscribe_event(request, event_id):
     if request.user not in event.attendees.all():
         event.attendees.add(request.user)
         messages.success(request, f'Te has inscrito exitosamente al evento {event.name}')
+
+        qr_url = request.build_absolute_uri(reverse('verify_qr_code', args=[request.user.id, event.id]))
+        qr = qrcode.make(qr_url)
+        qr_io = BytesIO()
+        qr.save(qr_io, 'PNG')
+        
+        attendance = Attendance.objects.create(user=request.user, event=event)
+        attendance.qr_code.save(f"qr_{request.user.id}_{event.id}.png", ContentFile(qr_io.getvalue()))
+        
         user_email = request.user.email
         evento_confirmacion(request, user_email, event_id)
     else:
@@ -98,6 +123,36 @@ def subscribe_event(request, event_id):
     
     return redirect('my_events')
 
+# Verificar QR
+def verify_qr_code(request, user_id, event_id):
+    try:
+        attendance = Attendance.objects.get(user__id=user_id, event__id=event_id)
+        if not attendance.attended:
+            attendance.attended = True
+            attendance.save()
+            messages.success(request, f"Asistencia verificada para el evento {attendance.event.name}")
+        else:
+            messages.warning(request, f"La asistencia para el evento {attendance.event.name} ya ha sido verificada.")
+
+        return render(request, 'verification.html', {
+            'user': attendance.user,
+        })
+    except Attendance.DoesNotExist:
+        return HttpResponse("Código QR no válido o asistencia no encontrada.", status=404)
+
+# Ver QR
+@login_required
+def view_qr_code(request, event_id, user_id):
+    attendance = get_object_or_404(Attendance, user_id=user_id, event_id=event_id)
+    qr_code = attendance.qr_code
+
+    if qr_code:
+        response = HttpResponse(qr_code, content_type="image/png")
+        response['Content-Disposition'] = f'inline; filename=qr_{user_id}_{event_id}.png'
+        return response
+    else:
+        return HttpResponse("QR Code no disponible", status=404)
+    
 #Desinscribirse de un evento
 @login_required
 def unsubscribe_event(request, event_id):
@@ -105,6 +160,7 @@ def unsubscribe_event(request, event_id):
 
     if request.user in event.attendees.all():
         event.attendees.remove(request.user)
+        Attendance.objects.filter(user=request.user, event=event).delete()
         messages.success(request, f'¡Hemos anulado la inscripción! Ya no estás inscrito a {event.name}')
         user_email = request.user.email
         evento_desconfirmacion(request, user_email, event_id)
@@ -113,22 +169,21 @@ def unsubscribe_event(request, event_id):
 
     return redirect('my_events')
 
-
+#Postularse como anunciante
 def advertise_form(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     existing_company = None
 
     if request.user.is_authenticated and hasattr(request.user, 'company'):
-        # Si el usuario tiene un perfil de empresa asociado, usa sus datos
+        
         existing_company = request.user.company
 
     if request.method == 'POST':
         form = AdvertiseForm(request.POST, request.FILES, existing_company=existing_company)
         if form.is_valid():
             advertiser_request = form.save(commit=False)
-            advertiser_request.event = event  # Asigna el evento
+            advertiser_request.event = event  
 
-            # Si la empresa ya existe, rellena los datos automáticamente
             if existing_company:
                 advertiser_request.company_name = existing_company.name
                 advertiser_request.contact_name = existing_company.personInCharge
@@ -143,7 +198,7 @@ def advertise_form(request, event_id):
 
     return render(request, 'advertise_form.html', {'form': form, 'event': event})
 
-# Ver eventos en los que el usuario está inscrito
+# Panel de mis eventos
 @login_required
 def my_events(request):
     current_time = timezone.now()
@@ -235,7 +290,7 @@ def send_email(user_email, subject, message):
     except Exception as e:
         return HttpResponse(f'Error enviando el correo: {str(e)}')
 
-# Funciones de confirmación y desconfirmación de eventos por correo
+# Formatos de correo (para inscripcion o anulación)
 def evento_confirmacion(request, user_email, event_id):
     event = Event.objects.get(id=event_id)
     subject = f"Confirmación de inscripción al evento {event.name}"

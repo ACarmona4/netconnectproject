@@ -56,7 +56,6 @@ class AdvertiseForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # Recibe una empresa existente, si está en los argumentos
         existing_company = kwargs.pop('existing_company', None)
         super().__init__(*args, **kwargs)
 

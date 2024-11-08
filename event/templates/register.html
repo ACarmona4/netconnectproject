@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load form_tags %}
 
-{% block title %}Registro{% endblock %}
+{% block title %}Inscribirse a {{ event.name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center">Crear una Cuenta</h2>
+    <h2 class="text-center">Inscribirse a {{ event.name }}</h2>
     
     <!-- Formulario de registro -->
     <form method="POST" novalidate>
@@ -13,31 +13,37 @@
         
         <!-- Campo de correo electrónico -->
         <div class="mb-3">
-            <label for="email" class="form-label">Correo Electrónico</label>
+            <label for="email" class="form-label">Correo Electrónico *</label>
             {{ form.email|add_class:"form-control uniform-size" }}
         </div>
         
         <!-- Campo de nombre -->
         <div class="mb-3">
-            <label for="name" class="form-label">Nombre</label>
+            <label for="name" class="form-label">Nombre *</label>
             {{ form.name|add_class:"form-control uniform-size" }}
         </div>
         
-        <!-- Campo de apellido (opcional) -->
+        <!-- Campo de apellido -->
         <div class="mb-3">
-            <label for="last_name" class="form-label">Apellido (opcional)</label>
+            <label for="last_name" class="form-label">Apellido *</label>
             {{ form.last_name|add_class:"form-control uniform-size" }}
         </div>
-        
-        <!-- Campo de teléfono (opcional) -->
+
+        <!-- Campo de documento de identidad -->
         <div class="mb-3">
-            <label for="phone" class="form-label">Teléfono (opcional)</label>
+            <label for="documentoIdentidad" class="form-label">Documento de Identidad *</label>
+            {{ form.documentoIdentidad|add_class:"form-control uniform-size" }}
+        </div>
+        
+        <!-- Campo de teléfono -->
+        <div class="mb-3">
+            <label for="phone" class="form-label">Teléfono *</label>
             {{ form.phone|add_class:"form-control uniform-size" }}
         </div>
 
         <!-- Campo de contraseña -->
         <div class="mb-3">
-            <label for="password1" class="form-label">Contraseña</label>
+            <label for="password1" class="form-label">Contraseña *</label>
             {{ form.password1|add_class:"form-control uniform-size" }}
             <div class="form-text">
                 La contraseña debe tener al menos 8 caracteres, incluir letras y números.
@@ -46,7 +52,7 @@
         
         <!-- Confirmación de contraseña -->
         <div class="mb-3">
-            <label for="password2" class="form-label">Confirmar Contraseña</label>
+            <label for="password2" class="form-label">Confirmar Contraseña *</label>
             {{ form.password2|add_class:"form-control uniform-size" }}
         </div>
 

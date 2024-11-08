@@ -21,7 +21,7 @@
         .accordion-item {
             background-color: transparent;
         }
-        .add-to-calendar-btn {
+        .add-to-calendar-btn, .validate-qr-btn {
             background-color: #ffffff;
             color: #000000;
             border: 2px solid #001f3f;
@@ -33,7 +33,7 @@
             border-radius: 5px;
             margin-bottom: 10px;
         }
-        .add-to-calendar-btn img {
+        .add-to-calendar-btn img, .validate-qr-btn img {
             width: 45px; 
             height: 33px; 
             margin-right: 10px;
@@ -64,6 +64,24 @@
                                         <p><img src="{% static 'images/ubicacion.png' %}" alt="Ubicación" style="width: 20px; margin-right: 10px;"> {{ event.location }}</p>
                                         <p class="text-muted" style="font-size: 0.9em;">Organizado por {{ event.organizer }}</p>
                                         
+                                        <button type="button" class="validate-qr-btn" data-bs-toggle="modal" data-bs-target="#qrModal-{{ event.id }}">
+                                            Validar asistencia
+                                        </button>
+
+                                        <div class="modal fade" id="qrModal-{{ event.id }}" tabindex="-1" aria-labelledby="qrModalLabel-{{ event.id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="qrModalLabel-{{ event.id }}">Código QR para {{ event.name }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center">
+                                                        <img src="{% url 'view_qr_code' event.id request.user.id %}" alt="QR Code" class="img-fluid">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <a href="{% url 'add_event_to_google_calendar' event.id %}" class="add-to-calendar-btn">
                                             Añadir a Google Calendar
                                             <img src="{% static 'images/calendar.png' %}" alt="Google Calendar">

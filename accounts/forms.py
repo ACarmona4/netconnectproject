@@ -19,7 +19,7 @@ User = get_user_model()
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     name = forms.CharField(label="Nombre")
-    last_name = forms.CharField(label="Apellido", required=False)
+    last_name = forms.CharField(label="Apellido", required=True)
     documentoIdentidad = forms.CharField(label="Documento de Identidad", required=True)
     phone = forms.CharField(label="Teléfono", required=False)
 

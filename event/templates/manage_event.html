@@ -9,20 +9,78 @@
     <p><strong>Ubicación:</strong> {{ event.location }}</p>
     <p><strong>Descripción:</strong> {{ event.description }}</p>
 
-    <!-- Lista de Asistentes -->
-    <div class="mt-5">
-        <h3>Lista de Asistentes</h3>
-        {% if attendees %}
-            <ul>
-                {% for attendee in attendees %}
-                    <li>{{ attendee.name }} - {{ attendee.email }}</li> <!-- Ajusta según los campos de tu modelo de usuario -->
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No hay asistentes registrados para este evento.</p>
-        {% endif %}
+    <!-- Botón para ver el QR de inscripción -->
+    <div class="mt-4">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#qrModal">
+            Ver QR de Inscripción
+        </button>
     </div>
 
+    <!-- Modal para mostrar el QR de inscripción -->
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrModalLabel">Código QR para Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="{% url 'generate_event_qr' event.id %}" alt="QR Code para Registro" class="img-fluid">
+                    <p class="mt-3">Escanea este código QR para registrarte directamente en el evento.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desplegable para Inscripciones -->
+    <div class="accordion mt-5" id="inscripcionesAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingInscripciones">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInscripciones" aria-expanded="true" aria-controls="collapseInscripciones">
+                    Personas Inscritas 
+                </button>
+            </h2>
+            <div id="collapseInscripciones" class="accordion-collapse collapse show" aria-labelledby="headingInscripciones" data-bs-parent="#inscripcionesAccordion">
+                <div class="accordion-body">
+                    {% if attendees %}
+                        <ul>
+                            {% for attendee in attendees %}
+                                <li><strong>Nombre: </strong>{{ attendee.name }} {{ attendee.last_name }} <strong> - Email: </strong> {{ attendee.email }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No hay inscritos para este evento.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desplegable para Asistentes Verificados -->
+    <div class="accordion mt-4" id="asistentesAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingAsistentes">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAsistentes" aria-expanded="false" aria-controls="collapseAsistentes">
+                    Asistentes
+                </button>
+            </h2>
+            <div id="collapseAsistentes" class="accordion-collapse collapse" aria-labelledby="headingAsistentes" data-bs-parent="#asistentesAccordion">
+                <div class="accordion-body">
+                    {% if verified_attendees %}
+                        <ul>
+                            {% for attendance in verified_attendees %}
+                                <li><strong>Nombre: </strong>{{ attendance.user.name }} {{ attendance.user.last_name }} <strong> - Email: </strong> {{ attendance.user.email }} <strong> - Celular: </strong> {{ attendance.user.phone }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No hay asistentes para este evento.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empresas Participantes -->
     <div class="mt-5">
         <h3 class="text-center" style="color: #001f3f;">Empresas Participantes</h3>
         <div class="row justify-content-center mt-4">
@@ -55,30 +113,26 @@
 
     <hr>
 
+    <!-- Solicitudes Anunciantes -->
     <h3>Solicitudes de Anunciantes</h3>
     {% if advertiser_requests %}
         <div class="requests-container">
             {% for request in advertiser_requests %}
                 <div class="request-card">
-                    <!-- Encabezado con los detalles principales -->
                     <div class="request-header">
                         <div>
                             <strong>Empresa:</strong> {{ request.company_name }}<br>
                             <strong>Contacto:</strong> {{ request.contact_name }}<br>
                             <strong>Correo:</strong> {{ request.contact_email }}<br>
                             <strong>Mensaje:</strong>
-
                         </div>
                         <div class="logo">
                             <img src="{{ request.logo.url }}" alt="Logo de {{ request.company_name }}">
                         </div>
                     </div>
-
-                    <!-- Mensaje con título sobre el texto -->
                     <div class="request-message">
                         <p>{{ request.message }}</p>
                     </div>
-                    
                     <div class="request-actions">
                         <a href="{% url 'update_advertiser_request' request.id 'accept' %}" class="btn btn-success btn-sm">Aceptar</a>
                         <a href="{% url 'update_advertiser_request' request.id 'reject' %}" class="btn btn-danger btn-sm">Rechazar</a>
@@ -92,14 +146,12 @@
 </div>
 
 <style>
-    /* Contenedor principal de las tarjetas */
     .requests-container {
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    /* Estilo de cada tarjeta de solicitud */
     .request-card {
         background-color: #f9f9f9;
         padding: 20px;
@@ -110,14 +162,12 @@
         gap: 15px;
     }
 
-    /* Encabezado con detalles principales y logo */
     .request-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    /* Estilo para el logo (sin borde) */
     .request-header .logo img {
         width: 80px;
         height: 80px;
@@ -125,7 +175,6 @@
         border-radius: 8px;
     }
 
-    /* Mensaje con altura máxima y scroll */
     .request-message {
         background-color: #fff;
         padding: 10px;
@@ -134,8 +183,8 @@
         font-size: 0.95rem;
         color: #333;
         position: relative;
-        max-height: 150px; /* Altura máxima */
-        overflow-y: auto;  /* Desplazamiento vertical */
+        max-height: 150px;
+        overflow-y: auto;
     }
 
     .message-label {
@@ -148,7 +197,6 @@
         color: #555;
     }
 
-    /* Acciones alineadas a la derecha */
     .request-actions {
         display: flex;
         justify-content: flex-end;
@@ -159,12 +207,11 @@
         width: 80px;
     }
 </style>
-    <!-- Botones para eliminar o modificar el evento -->
-    <form method="POST" action="{% url 'companies' %}">
-        {% csrf_token %}
-        <input type="hidden" name="delete_event_id" value="{{ event.id }}">
-        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este evento?')">Eliminar evento</button>
-        <a href="" class="btn btn-primary">Modificar evento</a>
-    </form>
+
+<form method="POST" action="{% url 'companies' %}">
+    {% csrf_token %}
+    <input type="hidden" name="delete_event_id" value="{{ event.id }}">
+    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este evento?')">Eliminar evento</button>
+</form>
 </div>
 {% endblock %}
