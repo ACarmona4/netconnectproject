@@ -89,7 +89,10 @@
                 <div class="card shadow-sm">
                     <div class="card-body text-center">
                         <img src="{{ company.logo.url }}" class="card-img-top p-3" alt="Logo de {{ company.name }}" style="height: 150px; object-fit: contain;">
-                        <h5 class="card-title" style="color: #001f3f;">{{ company.name }}</h5>
+                        <h5 class="card-title" style="color: #001f3f;">{{ company.name }}</h5>                        
+                        <p><strong>Encargado:</strong> {{ company.personInCharge }}</p>
+                        <p><strong>Correo:</strong> {{ company.email }}</p>
+                        
                     </div>
                 </div>
             </div>
@@ -102,6 +105,8 @@
                     <div class="card-body text-center">
                         <img src="{{ request.logo.url }}" class="card-img-top p-3" alt="Logo de {{ request.company_name }}" style="height: 150px; object-fit: contain;">
                         <h5 class="card-title" style="color: #001f3f;">{{ request.company_name }}</h5>
+                        <p><strong>Encargado:</strong> {{ request.contact_name }}</p>
+                        <p><strong>Correo:</strong> {{ request.contact_email }}</p>
                     </div>
                 </div>
             </div>
@@ -208,9 +213,8 @@
     }
 </style>
 
-<form method="POST" action="{% url 'companies' %}">
+<form method="POST" action="{% url 'delete_event' event.id %}">
     {% csrf_token %}
-    <input type="hidden" name="delete_event_id" value="{{ event.id }}">
     <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este evento?')">Eliminar evento</button>
 </form>
 </div>

@@ -21,14 +21,6 @@
     <h1 class="mb-1"><span style="color: #001f3f; font-family: 'Poppins', sans-serif; font-weight: 600;">Bienvenido al panel de empresas</span></h1>
     <p>Gestiona tus eventos y la logística desde un solo lugar.</p>
 
-    {% if messages %}
-        <div class="alert alert-success" role="alert">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="container mt-2">
         <h3 class="mt-5">Eventos organizados por {{ user.company.name }}</h3>
     

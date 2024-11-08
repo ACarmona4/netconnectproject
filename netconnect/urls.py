@@ -38,6 +38,7 @@ urlpatterns = [
     path('events/<int:event_id>/qr/<int:user_id>/', eventViews.view_qr_code, name='view_qr_code'),
     path('verify_qr_code/<int:user_id>/<int:event_id>/', eventViews.verify_qr_code, name='verify_qr_code'),
     path('event/<int:event_id>/qr/', eventViews.generate_event_qr, name='generate_event_qr'),
+    path('event/<int:event_id>/delete/', eventViews.delete_event, name='delete_event'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
