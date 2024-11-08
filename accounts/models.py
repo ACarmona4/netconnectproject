@@ -27,6 +27,7 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractUser):
     id = models.AutoField(primary_key=True)
     logo = models.ImageField(upload_to='company/images', default='company/images/default.jpg')
+    documentoIdentidad = models.CharField(max_length=12, blank=True, null=True)
     name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150, blank=True, null=True)
     email = models.EmailField(unique=True)

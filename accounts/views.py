@@ -26,22 +26,20 @@ def logoutView(request):
 
 
 def register(request):
-    next_event_id = request.GET.get('next_event')  # Obtener el ID del evento desde la URL
+    next_event_id = request.GET.get('next_event')  
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_company = False  # Asegurarse de que el usuario no sea una empresa
+            user.is_company = False  
             user.save()
-            login(request, user)  # Autenticar al usuario automáticamente
+            login(request, user)  
 
-            # Inscribir al usuario en el evento si `next_event_id` está presente
             if next_event_id:
                 event = Event.objects.filter(id=next_event_id).first()
                 if event:
-                    event.attendees.add(user)  # Agregar usuario a los asistentes del evento
+                    event.attendees.add(user)  
 
-            # Redirigir al detalle del evento o a la página de inicio si no hay evento
             return redirect('event_detail', event_id=next_event_id if next_event_id else 'home')
     else:
         form = RegisterForm()
