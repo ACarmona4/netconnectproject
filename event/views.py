@@ -84,6 +84,7 @@ def manageEvent(request, event_id):
         'registered_companies': registered_companies,
         'accepted_requests': accepted_requests,
     })
+    
 # Eliminar evento
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -91,9 +92,9 @@ def delete_event(request, event_id):
     if request.method == 'POST':
         event.delete()
         messages.success(request, 'El evento ha sido eliminado con éxito.')
-        return redirect('companies')  # Redirige a la página del panel de la empresa o a otra página adecuada
+        return redirect('companies')  
 
-    return redirect('manage_event', event_id=event.id)  # Redirige de vuelta si no es una solicitud POST
+    return redirect('manage_event', event_id=event.id)  
 
 # Generar QR del evento
 def generate_event_qr(request, event_id):
